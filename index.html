@@ -6,6 +6,7 @@
 <body>
   Google Cloud Vision API Key: <input id="ocr_api_key" type="password" style="width:300px" /><br />
   OpenAI API Key: <input id="openai_api_key" type="password" style="width:300px" /><br />
+  Google Sheet API URL: <input id="sheet_api_url" type="password" style="width:300px" /><br />  
   <input id="image" type="file" accept="image/*" /><br />
   <img style="max-width: 400px;">
   <pre></pre>
@@ -54,6 +55,7 @@
         openai_url,
         {
           "model": "gpt-4-turbo-preview",
+          "response_format": { "type": "json_object" },
           "messages": [
             { "role": "system", "content": system_prompt },
             { "role": "user", "content": text }
@@ -68,24 +70,37 @@
       );
     };
 
+    const addData = (json) => {
+      let sheet_api_url = document.querySelector('#sheet_api_url').value;
+      Cookies.set('sheet_api_url', sheet_api_url, { expires: 7, path: '' });
+      let data = JSON.parse(json);
+      return fetch(sheet_api_url, {
+        method: 'POST',
+        body: JSON.stringify(data)
+      });
+    };
+
     document.querySelector('#ocr_api_key').value = Cookies.get('ocr_api_key') || '';
     document.querySelector('#openai_api_key').value = Cookies.get('openai_api_key') || '';
+    document.querySelector('#sheet_api_url').value = Cookies.get('sheet_api_url') || '';
     document.querySelector('#image').addEventListener('change', e => {
       if (!e.target.files || e.target.files.length == 0) return;
-      Promise.resolve(e.target.files[0])
-        .then(readFile)
-        .then(ocr)
-        .then(res => {
-          let description = res.data.responses[0].textAnnotations[0].description;
-          return JSONification(description);
-        })
-        .then(res => {
-          let json = res.data.choices[0].message.content;
-          document.querySelector('pre').innerHTML = json;
-        })
-        .catch(err => {
-          console.log(err);
-        });
+        Promise.resolve(e.target.files[0])
+          .then(readFile)
+          .then(ocr)
+          .then(res => {
+            let description = res.data.responses[0].textAnnotations[0].description;
+            return JSONification(description);
+          })
+          .then(res => {
+            let json = res.data.choices[0].message.content;
+            console.log(JSON.parse(json));
+            document.querySelector('pre').innerHTML = json;
+            return addData(json);
+          })
+          .catch(err => {
+            console.log(err);
+          });
     });
   </script>
 </body>
