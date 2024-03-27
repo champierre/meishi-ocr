@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head></head>
+
+<body>
+  Google Cloud Vision API Key: <input id="ocr_api_key" type="password" style="width:300px" /><br />
+  OpenAI API Key: <input id="openai_api_key" type="password" style="width:300px" /><br />
+  <input id="image" type="file" accept="image/*" /><br />
+  <img style="max-width: 400px;">
+  <pre></pre>
+  <script src="https://unpkg.com/axios@1.1.2/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+  <script type="text/javascript">
+    const ocr_url = 'https://vision.googleapis.com/v1/images:annotate';
+    const openai_url = 'https://api.openai.com/v1/chat/completions';
+
+    const ocr = (base64string) => {
+      let body = {
+        requests: [
+          { image: { content: base64string }, features: [{ type: 'TEXT_DETECTION' }] }
+        ]
+      };
+      let ocr_api_key = document.querySelector('#ocr_api_key').value;
+      Cookies.set('ocr_api_key', ocr_api_key, { expires: 7, path: '' });
+      return axios.post(`${ocr_url}?key=${ocr_api_key}`, body)
+    }
+
+    const readFile = (file) => {
+      let reader = new FileReader();
+      const p = new Promise((resolve, reject) => {
+        reader.onload = (e) => {
+          document.querySelector('img').setAttribute('src', e.target.result);
+          resolve(e.target.result.replace(/^data:image\/(png|jpeg);base64,/, ''));
+        };
+      })
+      reader.readAsDataURL(file);
+      return p;
+    };
+
+    const JSONification = (text) => {
+      let openai_api_key = document.querySelector('#openai_api_key').value;
+      Cookies.set('openai_api_key', openai_api_key, { expires: 7, path: '' });
+      let schema = `{
+        "会社名": "string",
+        "部署名": "string",
+        "氏名": "string",
+        "会社住所": "string | null",
+        "電話番号": "string | null",
+        "e-mailアドレス": "string | null"
+      }`;
+      let system_prompt = `次の文字列から会社名、部署名、氏名、会社住所、電話番号、e-mailアドレスを抜き出して、JSON形式で出力してください。JSONのスキーマは次の通りです${schema}`;
+      return axios.post(
+        openai_url,
+        {
+          "model": "gpt-4-turbo-preview",
+          "messages": [
+            { "role": "system", "content": system_prompt },
+            { "role": "user", "content": text }
+          ]
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${openai_api_key}`,
+          },
+        }
+      );
+    };
+
+    document.querySelector('#ocr_api_key').value = Cookies.get('ocr_api_key') || '';
+    document.querySelector('#openai_api_key').value = Cookies.get('openai_api_key') || '';
+    document.querySelector('#image').addEventListener('change', e => {
+      if (!e.target.files || e.target.files.length == 0) return;
+      Promise.resolve(e.target.files[0])
+        .then(readFile)
+        .then(ocr)
+        .then(res => {
+          let description = res.data.responses[0].textAnnotations[0].description;
+          return JSONification(description);
+        })
+        .then(res => {
+          let json = res.data.choices[0].message.content;
+          document.querySelector('pre').innerHTML = json;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    });
+  </script>
+</body>
+
+</html>
