@@ -96,7 +96,6 @@
           })
           .then(res => {
             let json = res.data.choices[0].message.content;
-            console.log(JSON.parse(json));
             document.querySelector('pre').innerHTML = json;
             return addData(json);
           })
