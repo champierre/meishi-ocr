@@ -2,6 +2,8 @@
 
 meishi-ocrは、名刺の画像を撮影すると、それをスキャンし、抽出した情報を自動的にGoogleスプレッドシートに追加するサンプルです。OCR（光学文字認識）にはGoogle Cloud Vision APIを利用し、抽出したテキスト情報をOpenAI APIを使って会社名や氏名などの各項目に構造化し、Googleスプレッドシートに書き込みます。
 
+![デモ動画](meishi-ocr.gif)
+
 ## 準備
 
 meishi-ocrを使うには、
