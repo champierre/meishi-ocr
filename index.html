@@ -3,15 +3,87 @@
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+
+    h2 {
+      color: #444;
+    }
+
+    input[type="password"],
+    input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      display: inline-block;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    input[type="file"] {
+      background-color: #ffffff;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+
+    pre {
+      background-color: #eee;
+      padding: 20px;
+      overflow: auto;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .button {
+      width: 100%;
+      background-color: #4CAF50;
+      color: white;
+      padding: 14px 20px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      background-color: #45a049;
+    }
+  </style>
 </head>
 
 <body>
-  Google Cloud Vision API Key: <input id="ocr_api_key" type="password" style="width:300px" /><br />
-  OpenAI API Key: <input id="openai_api_key" type="password" style="width:300px" /><br />
-  Google Sheet API URL: <input id="sheet_api_url" type="password" style="width:300px" /><br />  
-  <input id="image" type="file" accept="image/*" /><br />
-  <img style="max-width: 400px;">
-  <pre></pre>
+  <div class="container">
+    <h2>設定</h2>
+    Google Cloud Vision API Key: <input id="ocr_api_key" type="password" style="width:300px" /><br />
+    OpenAI API Key: <input id="openai_api_key" type="password" style="width:300px" /><br />
+    Google Sheet API URL: <input id="sheet_api_url" type="password" style="width:300px" /><br />
+    <input id="image" type="file" accept="image/*" /><br />
+    <img style="max-width: 400px;">
+    <h2>読み取りデータ</h2>
+    <pre></pre>
+  </div>
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
   <script type="text/javascript">
     const ocr_url = 'https://vision.googleapis.com/v1/images:annotate';
@@ -67,7 +139,7 @@
           { role: 'user', content: text }
         ]
       }
-      
+
       return fetch(openai_url, {
         method: 'POST',
         body: JSON.stringify(body),
@@ -93,23 +165,23 @@
     document.querySelector('#sheet_api_url').value = Cookies.get('sheet_api_url') || '';
     document.querySelector('#image').addEventListener('change', e => {
       if (!e.target.files || e.target.files.length == 0) return;
-        Promise.resolve(e.target.files[0])
-          .then(readFile)
-          .then(ocr)
-          .then(res => res.json())
-          .then(res => {
-            let description = res.responses[0].textAnnotations[0].description;
-            return JSONification(description);
-          })
-          .then(res => res.json())
-          .then(res => {
-            let json = res.choices[0].message.content;
-            document.querySelector('pre').innerHTML = json;
-            return addData(json);
-          })
-          .catch(err => {
-            console.log(err);
-          });
+      Promise.resolve(e.target.files[0])
+        .then(readFile)
+        .then(ocr)
+        .then(res => res.json())
+        .then(res => {
+          let description = res.responses[0].textAnnotations[0].description;
+          return JSONification(description);
+        })
+        .then(res => res.json())
+        .then(res => {
+          let json = res.choices[0].message.content;
+          document.querySelector('pre').innerHTML = json;
+          return addData(json);
+        })
+        .catch(err => {
+          console.log(err);
+        });
     });
   </script>
 </body>
