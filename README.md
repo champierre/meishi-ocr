@@ -31,3 +31,9 @@ GoogleスプレッドシートとそれにアクセスするためのGoogle Shee
 - Google Cloud Vision API Key、OpenAI API Key、Google Sheet API URLを用意し、それぞれを入力します。
 - 「ファイルを選択」ボタンを押し、名刺の画像をカメラで直接撮影するか、あらかじめ撮ってある画像を選択してアップロードします。
 - 画像から読み取った情報を構造化した結果が「読み取りデータ」に表示され、用意したGoogleスプレッドシートに追加されます。
+
+## 参考
+
+以下のサイトを参考にしました。
+
+- [GPTが人知れず既存の名刺管理アプリを抹殺していた話](https://qiita.com/watanabe-tsubasa/items/12dc7ba9a6de55e8afd9)
