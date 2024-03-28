@@ -70,25 +70,74 @@
     .button:hover {
       background-color: #45a049;
     }
+
+    label {
+      display: block;
+      font-weight: bold;
+      font-size: large;
+    }
+
+    /* 設定の内容をデフォルトで隠す */
+    .settings-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+
+    /* チェックボックスがチェックされているときに設定の内容を表示 */
+    #settings-toggle:checked + .accordion-toggle + .settings-content {
+      max-height: 1000px; /* 十分に大きな値 */
+    }
+
+    .accordion-toggle {
+      cursor: pointer;
+      padding: 10px 0;
+      display: block;
+      font-weight: bold;
+      color: #444;
+      position: relative;
+    }
+
+    .accordion-toggle:after {
+      content: "+";
+      position: absolute;
+      left: 40px;
+      top: 13px;
+    }
+
+    #settings-toggle:checked ~ .accordion-toggle:after {
+      content: "-";
+    }
   </style>
 </head>
 
 <body>
   <div class="container">
-    <h2>設定</h2>
-    Google Cloud Vision API Key: <input id="ocr_api_key" type="password" style="width:300px" /><br />
-    OpenAI API Key: <input id="openai_api_key" type="password" style="width:300px" /><br />
-    Google Sheet API URL: <input id="sheet_api_url" type="password" style="width:300px" /><br />
-    <h2>名刺の画像</h2>
-    <input id="image" type="file" accept="image/*" /><br />
-    <img style="max-width: 320px;">
-    <h2>読み取りデータ</h2>
-    <pre></pre>
+
+    <input type="checkbox" id="settings-toggle" style="display:none">
+    <label for="settings-toggle" class="accordion-toggle">設定</label>
+    <div class="settings-content">
+      Google Cloud Vision API Key: <input id="ocr_api_key" type="password" style="width:300px" /><br />
+      OpenAI API Key: <input id="openai_api_key" type="password" style="width:300px" /><br />
+      Google Sheet API URL: <input id="sheet_api_url" type="password" style="width:300px" /><br />
+    </div>
+
+    <label>名刺の画像</label>
+    <div>
+      <input id="image" type="file" accept="image/*" /><br />
+      <img style="max-width: 320px;">
+    </div>
+
+    <label>読み取りデータ</label>
+    <div>
+      <pre></pre>
+    </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
   <script type="text/javascript">
     const ocr_url = 'https://vision.googleapis.com/v1/images:annotate';
     const openai_url = 'https://api.openai.com/v1/chat/completions';
+    const cookie_expires = 30;
 
     const ocr = (base64string) => {
       let body = {
@@ -97,7 +146,7 @@
         ]
       };
       let ocr_api_key = document.querySelector('#ocr_api_key').value;
-      Cookies.set('ocr_api_key', ocr_api_key, { expires: 7, path: '' });
+      Cookies.set('ocr_api_key', ocr_api_key, { expires: cookie_expires, path: '' });
 
       return fetch(`${ocr_url}?key=${ocr_api_key}`, {
         method: 'POST',
@@ -122,7 +171,7 @@
 
     const JSONification = (text) => {
       let openai_api_key = document.querySelector('#openai_api_key').value;
-      Cookies.set('openai_api_key', openai_api_key, { expires: 7, path: '' });
+      Cookies.set('openai_api_key', openai_api_key, { expires: cookie_expires, path: '' });
       let schema = `{
         "会社名": "string",
         "部署名": "string",
@@ -153,7 +202,7 @@
 
     const addData = (json) => {
       let sheet_api_url = document.querySelector('#sheet_api_url').value;
-      Cookies.set('sheet_api_url', sheet_api_url, { expires: 7, path: '' });
+      Cookies.set('sheet_api_url', sheet_api_url, { expires: cookie_expires, path: '' });
       let data = JSON.parse(json);
       return fetch(sheet_api_url, {
         method: 'POST',
