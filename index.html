@@ -12,7 +12,6 @@
   <input id="image" type="file" accept="image/*" /><br />
   <img style="max-width: 400px;">
   <pre></pre>
-  <script src="https://unpkg.com/axios@1.1.2/dist/axios.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
   <script type="text/javascript">
     const ocr_url = 'https://vision.googleapis.com/v1/images:annotate';
@@ -26,7 +25,14 @@
       };
       let ocr_api_key = document.querySelector('#ocr_api_key').value;
       Cookies.set('ocr_api_key', ocr_api_key, { expires: 7, path: '' });
-      return axios.post(`${ocr_url}?key=${ocr_api_key}`, body)
+
+      return fetch(`${ocr_url}?key=${ocr_api_key}`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
     }
 
     const readFile = (file) => {
@@ -53,23 +59,23 @@
         "e-mailアドレス": "string | null"
       }`;
       let system_prompt = `次の文字列から会社名、部署名、氏名、会社住所、電話番号、e-mailアドレスを抜き出して、JSON形式で出力してください。JSONのスキーマは次の通りです${schema}`;
-      return axios.post(
-        openai_url,
-        {
-          "model": "gpt-4-turbo-preview",
-          "response_format": { "type": "json_object" },
-          "messages": [
-            { "role": "system", "content": system_prompt },
-            { "role": "user", "content": text }
-          ]
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${openai_api_key}`,
-          },
+      let body = {
+        model: 'gpt-3.5-turbo',
+        response_format: { type: 'json_object' },
+        messages: [
+          { role: 'system', content: system_prompt },
+          { role: 'user', content: text }
+        ]
+      }
+      
+      return fetch(openai_url, {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${openai_api_key}`,
         }
-      );
+      });
     };
 
     const addData = (json) => {
@@ -90,12 +96,14 @@
         Promise.resolve(e.target.files[0])
           .then(readFile)
           .then(ocr)
+          .then(res => res.json())
           .then(res => {
-            let description = res.data.responses[0].textAnnotations[0].description;
+            let description = res.responses[0].textAnnotations[0].description;
             return JSONification(description);
           })
+          .then(res => res.json())
           .then(res => {
-            let json = res.data.choices[0].message.content;
+            let json = res.choices[0].message.content;
             document.querySelector('pre').innerHTML = json;
             return addData(json);
           })
