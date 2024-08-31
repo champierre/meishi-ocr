@@ -143,6 +143,8 @@
 
     navigator.geolocation.getCurrentPosition((position) => {
       console.log(position);
+      document.querySelector('#lat').value = position.coords.latitude;
+      document.querySelector('#lng').value = position.coords.longitude;
     });
 
     const ocr = (base64string) => {
