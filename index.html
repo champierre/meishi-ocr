@@ -125,6 +125,8 @@
     <label>名刺の画像</label>
     <div>
       <input id="image" type="file" accept="image/*" /><br />
+      <input id="lat" type="text" /><br />
+      <input id="lng" type="text" />
       <img>
     </div>
 
@@ -138,6 +140,10 @@
     const ocr_url = 'https://vision.googleapis.com/v1/images:annotate';
     const openai_url = 'https://api.openai.com/v1/chat/completions';
     const cookie_expires = 180;
+
+    navigator.geolocation.getCurrentPosition((position) => {
+      console.log(position);
+    });
 
     const ocr = (base64string) => {
       let body = {
