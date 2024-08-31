@@ -122,14 +122,16 @@
       Google Sheet API URL: <input id="sheet_api_url" type="text" style="width:300px" /><br />
     </div>
 
+    
     <label>名刺の画像</label>
     <div>
       <input id="image" type="file" accept="image/*" /><br />
-      <input id="lat" type="text" /><br />
-      <input id="lng" type="text" />
       <img>
     </div>
 
+    <input id="lat" type="hidden" />
+    <input id="lng" type="hidden" />
+    
     <label>読み取りデータ</label>
     <div>
       <pre></pre>
@@ -212,6 +214,8 @@
       let sheet_api_url = document.querySelector('#sheet_api_url').value;
       Cookies.set('sheet_api_url', sheet_api_url, { expires: cookie_expires, path: '' });
       let data = JSON.parse(json);
+      data.lat = document.querySelector('#lat').value;
+      data.lng = document.querySelector('#lng').value;
       return fetch(sheet_api_url, {
         method: 'POST',
         body: JSON.stringify(data)
