@@ -182,7 +182,7 @@
       }`;
       let system_prompt = `次の文字列から会社名、部署名、氏名、会社住所、電話番号、e-mailアドレスを抜き出して、JSON形式で出力してください。JSONのスキーマは次の通りです${schema}`;
       let body = {
-        model: 'gpt-4o',
+        model: 'gpt-4o-mini',
         response_format: { type: 'json_object' },
         messages: [
           { role: 'system', content: system_prompt },
