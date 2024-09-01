@@ -214,8 +214,10 @@
       let sheet_api_url = document.querySelector('#sheet_api_url').value;
       Cookies.set('sheet_api_url', sheet_api_url, { expires: cookie_expires, path: '' });
       let data = JSON.parse(json);
-      data.lat = document.querySelector('#lat').value;
-      data.lng = document.querySelector('#lng').value;
+      const lat = document.querySelector('#lat').value;
+      const lng = document.querySelector('#lng').value;
+      const mapUrl = `https://www.google.com/maps/search/?api=1&query=${lat}%2C${lng}`;
+      data.mapUrl = mapUrl;
       return fetch(sheet_api_url, {
         method: 'POST',
         body: JSON.stringify(data)
