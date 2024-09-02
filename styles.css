@@ -1,0 +1,104 @@
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+  color: #333;
+}
+
+h2 {
+  color: #444;
+}
+
+input[type="password"],
+input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input[type="file"] {
+  background-color: #ffffff;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin-bottom: 20px;
+  border-radius: 5px;
+}
+
+pre {
+  background-color: #eee;
+  padding: 20px;
+  overflow: auto;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.button {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #45a049;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  font-size: large;
+}
+
+/* 設定の内容をデフォルトで隠す */
+.settings-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+/* チェックボックスがチェックされているときに設定の内容を表示 */
+#settings-toggle:checked + .accordion-toggle + .settings-content {
+  max-height: 1000px; /* 十分に大きな値 */
+}
+
+.accordion-toggle {
+  cursor: pointer;
+  padding: 10px 0;
+  display: block;
+  font-weight: bold;
+  color: #444;
+  position: relative;
+}
+
+.accordion-toggle:after {
+  content: "+";
+  position: absolute;
+  left: 40px;
+  top: 13px;
+}
+
+#settings-toggle:checked ~ .accordion-toggle:after {
+  content: "-";
+}
