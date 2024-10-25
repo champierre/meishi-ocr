@@ -1,6 +1,9 @@
 const ocr_url = 'https://vision.googleapis.com/v1/images:annotate';
 const openai_url = 'https://api.openai.com/v1/chat/completions';
 const cookie_expires = 180;
+let google_cloud_vision_api_key;
+let openai_api_key;
+let google_sheet_api_url;
 
 document.addEventListener('DOMContentLoaded', function() {
   setupAPIKeys();
@@ -9,9 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function setupAPIKeys() {
-  document.querySelector('#ocr_api_key').value = Cookies.get('ocr_api_key') || '';
-  document.querySelector('#openai_api_key').value = Cookies.get('openai_api_key') || '';
-  document.querySelector('#sheet_api_url').value = Cookies.get('sheet_api_url') || '';
+  document.querySelector('#settings').value = Cookies.get('settings') || '';
 }
 
 function setCurrentPosition() {
@@ -51,8 +52,11 @@ function performOcr(base64string) {
       { image: { content: base64string }, features: [{ type: 'TEXT_DETECTION' }] }
     ]
   };
-  const ocr_api_key = document.querySelector('#ocr_api_key').value;
-  Cookies.set('ocr_api_key', ocr_api_key, { expires: cookie_expires, path: '' });
+  const settings = JSON.parse(document.querySelector('#settings').value);
+  google_cloud_vision_api_key = settings.google_cloud_vision_api_key;
+  openai_api_key = settings.openai_api_key;
+  google_sheet_api_url = settings.google_sheet_api_url;
+  Cookies.set('settings', settings, { expires: cookie_expires, path: '' });
 
   return fetch(`${ocr_url}?key=${ocr_api_key}`, {
     method: 'POST',
@@ -66,8 +70,6 @@ function performOcr(base64string) {
 }
 
 function JSONification(text) {
-  const openai_api_key = document.querySelector('#openai_api_key').value;
-  Cookies.set('openai_api_key', openai_api_key, { expires: cookie_expires, path: '' });
   const schema = `{
     "会社名": "string",
     "部署名": "string",
@@ -101,8 +103,6 @@ function JSONification(text) {
 };
 
 function addData(json) {
-  const sheet_api_url = document.querySelector('#sheet_api_url').value;
-  Cookies.set('sheet_api_url', sheet_api_url, { expires: cookie_expires, path: '' });
   let data = JSON.parse(json);
   const lat = document.querySelector('#lat').value;
   const lng = document.querySelector('#lng').value;

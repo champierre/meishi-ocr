@@ -12,12 +12,15 @@
     <input type="checkbox" id="settings-toggle" style="display:none">
     <label for="settings-toggle" class="accordion-toggle">設定</label>
     <div class="settings-content">
-      Google Cloud Vision API Key: <input id="ocr_api_key" type="text" style="width:300px" /><br />
-      OpenAI API Key: <input id="openai_api_key" type="text" style="width:300px" /><br />
-      Google Sheet API URL: <input id="sheet_api_url" type="text" style="width:300px" /><br />
+      <textarea id="settings" name="settings" rows="5" cols="80">
+{
+  "google_cloud_vision_api_key": "YOUR_GOOGLE_CLOUD_VISION_API_KEY",
+  "openai_api_key": "YOUR_OPENAI_API_KEY",
+  "google_sheet_api_url": "YOUR_GOOGLE_SHEET_API_URL"
+}
+      </textarea>
     </div>
 
-    
     <label>名刺の画像</label>
     <div>
       <input id="image" type="file" accept="image/*" /><br />
@@ -26,7 +29,7 @@
 
     <input id="lat" type="hidden" />
     <input id="lng" type="hidden" />
-    
+
     <label>読み取りデータ</label>
     <div>
       <pre></pre>
