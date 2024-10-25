@@ -52,13 +52,13 @@ function performOcr(base64string) {
       { image: { content: base64string }, features: [{ type: 'TEXT_DETECTION' }] }
     ]
   };
-  const settings = JSON.parse(document.querySelector('#settings').value);
-  google_cloud_vision_api_key = settings.google_cloud_vision_api_key;
-  openai_api_key = settings.openai_api_key;
-  google_sheet_api_url = settings.google_sheet_api_url;
+  const settings = document.querySelector('#settings').value.split(',');
+  google_cloud_vision_api_key = settings[0];
+  openai_api_key = settings[1];
+  google_sheet_api_url = settings[2];
   Cookies.set('settings', settings, { expires: cookie_expires, path: '' });
 
-  return fetch(`${ocr_url}?key=${ocr_api_key}`, {
+  return fetch(`${ocr_url}?key=${google_cloud_vision_api_key}`, {
     method: 'POST',
     body: JSON.stringify(body),
     headers: {
@@ -108,7 +108,7 @@ function addData(json) {
   const lng = document.querySelector('#lng').value;
   const mapUrl = `https://www.google.com/maps/search/?api=1&query=${lat}%2C${lng}`;
   data.mapUrl = mapUrl;
-  return fetch(sheet_api_url, {
+  return fetch(google_sheet_api_url, {
     method: 'POST',
     body: JSON.stringify(data)
   });
